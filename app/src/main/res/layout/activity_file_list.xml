@@ -6,41 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".FileListActivity">
 
-
-    <LinearLayout
-        android:id="@+id/nav_select"
+    <GridView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/gv_folder"
+        android:numColumns="2"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"></GridView>
 
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/textView4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/text" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/nav_select_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/nav_select"
-        android:orientation="horizontal">
-        <Button
-            android:id="@+id/button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
-            android:text="@string/choose_directory"
-            android:textColor="@color/colorWhite" />
-    </LinearLayout>
-
-
-    <ListView
-        android:id="@+id/lvMain"
-        android:layout_below="@id/nav_select_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"></ListView>
 </android.support.constraint.ConstraintLayout>
