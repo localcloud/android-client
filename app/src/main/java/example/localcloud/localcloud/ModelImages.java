@@ -4,31 +4,31 @@ import java.util.ArrayList;
 
 
 public class ModelImages {
-    String str_folder;
-    String str_folder_path;
-    ArrayList<String> al_imagepath;
+    private String folderName;
+    private String folderPath;
+    private ArrayList<String> allImagesPath;
 
-    public String getStr_folder() {
-        return str_folder;
+    public String getFolderName() {
+        return folderName;
     }
 
-    public String getStr_folder_path() {
-        return str_folder_path;
+    public String getFolderPath() {
+        return folderPath;
     }
 
-    public void setStr_folder(String str_folder) {
-        this.str_folder = str_folder;
+    public void setFolderName(String folderName) {
+        this.folderName = folderName;
     }
 
-    public void setStr_folder_path(String str_folder_path) {
-        this.str_folder_path = str_folder_path;
+    public void setFolderPath(String folderPath) {
+        this.folderPath = folderPath;
     }
 
-    public ArrayList<String> getAl_imagepath() {
-        return al_imagepath;
+    public ArrayList<String> getAllImagesPath() {
+        return allImagesPath;
     }
 
-    public void setAl_imagepath(ArrayList<String> al_imagepath) {
-        this.al_imagepath = al_imagepath;
+    public void setAllImagesPath(ArrayList<String> allImagesPath) {
+        this.allImagesPath = allImagesPath;
     }
 }

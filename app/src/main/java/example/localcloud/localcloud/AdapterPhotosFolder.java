@@ -1,7 +1,6 @@
 package example.localcloud.localcloud;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,13 +71,13 @@ public class AdapterPhotosFolder extends ArrayAdapter<ModelImages> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.tv_foldern.setText(al_menu.get(position).getStr_folder());
-        viewHolder.tv_foldersize.setText(al_menu.get(position).getAl_imagepath().size() + "");
+        viewHolder.tv_foldern.setText(al_menu.get(position).getFolderName());
+        viewHolder.tv_foldersize.setText(al_menu.get(position).getAllImagesPath().size() + "");
 
 
         Glide
                 .with(context)
-                .load("file://" + al_menu.get(position).getAl_imagepath().get(0))
+                .load("file://" + al_menu.get(position).getAllImagesPath().get(0))
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
                 .centerCrop()

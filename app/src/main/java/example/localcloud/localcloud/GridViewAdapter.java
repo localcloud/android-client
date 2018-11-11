@@ -36,8 +36,8 @@ public class GridViewAdapter extends ArrayAdapter<ModelImages> {
     @Override
     public int getCount() {
 
-        Log.e("ADAPTER LIST SIZE", al_menu.get(int_position).getAl_imagepath().size() + "");
-        return al_menu.get(int_position).getAl_imagepath().size();
+        Log.e("ADAPTER LIST SIZE", al_menu.get(int_position).getAllImagesPath().size() + "");
+        return al_menu.get(int_position).getAllImagesPath().size();
     }
 
     @Override
@@ -47,8 +47,8 @@ public class GridViewAdapter extends ArrayAdapter<ModelImages> {
 
     @Override
     public int getViewTypeCount() {
-        if (al_menu.get(int_position).getAl_imagepath().size() > 0) {
-            return al_menu.get(int_position).getAl_imagepath().size();
+        if (al_menu.get(int_position).getAllImagesPath().size() > 0) {
+            return al_menu.get(int_position).getAllImagesPath().size();
         } else {
             return 1;
         }
@@ -81,7 +81,7 @@ public class GridViewAdapter extends ArrayAdapter<ModelImages> {
         viewHolder.tv_foldersize.setVisibility(View.GONE);
 
 
-        Glide.with(context).load("file://" + al_menu.get(int_position).getAl_imagepath().get(position))
+        Glide.with(context).load("file://" + al_menu.get(int_position).getAllImagesPath().get(position))
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
                 .into(viewHolder.iv_image);

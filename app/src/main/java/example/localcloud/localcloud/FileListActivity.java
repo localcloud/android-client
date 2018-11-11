@@ -4,8 +4,10 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.database.MergeCursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +19,14 @@ import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.thegrizzlylabs.sardineandroid.Sardine;
+import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine;
+
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,13 +38,57 @@ public class FileListActivity extends AppCompatActivity {
     AdapterPhotosFolder obj_adapter;
     GridView gv_folder;
     private static final int REQUEST_PERMISSIONS = 100;
-
+    private static final String TAG = "preview_log";
     private Map selectedState = new HashMap<String, Boolean>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_list);
+//http://192.168.31.156:5555
+        final Sardine sardine = new OkHttpSardine();
+        sardine.setCredentials("nikolay", "nikolay_password", false);
+        FloatingActionButton fab = findViewById(R.id.send_files);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (int i = 0; i < al_images.size(); i++) {
+                            String path = al_images.get(i).getFolderPath();
+                            if (selectedState.containsKey(path) && selectedState.get(path).equals(true)) {
+                                Log.d(TAG, "send folder: " + al_images.get(i).getFolderPath());
+                                ;
+                                for (String img :
+                                        al_images.get(i).getAllImagesPath()) {
+                                    Log.d(TAG, "send image: " + img);
+                                    File file = new File(img);
+                                    int size = (int) file.length();
+                                    byte[] bytes = new byte[size];
+
+
+                                    try {
+                                        BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+                                        buf.read(bytes, 0, bytes.length);
+                                        buf.close();
+                                        sardine.createDirectory("http://192.168.31.156:5555/" + al_images.get(i).getFolderPath());
+                                        sardine.put("http://192.168.31.156:5555/test.jpg" , bytes);
+                                    } catch (FileNotFoundException e) {
+                                        // TODO Auto-generated catch block
+                                        e.printStackTrace();
+                                    } catch (IOException e) {
+                                        // TODO Auto-generated catch block
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }).start();
+            }
+        });
+
         gv_folder = (GridView) findViewById(R.id.gv_folder);
         gv_folder.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -43,8 +96,8 @@ public class FileListActivity extends AppCompatActivity {
 
                 TextView textView = view.findViewById(R.id.tv_folder);
                 if (textView != null) {
-                    String path = al_images.get(position).getStr_folder_path();
-                    Log.d("peview", "long click " + position + "image folder: " + path);
+                    String path = al_images.get(position).getFolderPath();
+                    Log.d(TAG, "long click " + position + "image folder: " + path);
                     Resources.Theme t = view.getContext().getTheme();
                     if (selectedState.containsKey(path) && selectedState.get(path).equals(true)) {
                         selectedState.put(path, false);
@@ -102,7 +155,12 @@ public class FileListActivity extends AppCompatActivity {
         String[] projection = {MediaStore.MediaColumns.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
 
         final String orderBy = MediaStore.Images.Media.DATE_TAKEN;
-        cursor = getApplicationContext().getContentResolver().query(uri, projection, null, null, orderBy + " DESC");
+        cursor = new MergeCursor(
+                new Cursor[]{
+                        getApplicationContext().getContentResolver().query(uri, projection, null, null, orderBy + " DESC"),
+                        getApplicationContext().getContentResolver().query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projection, null, null, orderBy + " DESC"),
+                }
+        );
 
         column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
         column_index_folder_name = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
@@ -111,7 +169,7 @@ public class FileListActivity extends AppCompatActivity {
             Log.e("Column", absolutePathOfImage);
             Log.e("Folder", cursor.getString(column_index_folder_name));
             for (int i = 0; i < al_images.size(); i++) {
-                if (al_images.get(i).getStr_folder().equals(cursor.getString(column_index_folder_name))) {
+                if (al_images.get(i).getFolderName().equals(cursor.getString(column_index_folder_name))) {
                     boolean_folder = true;
                     int_position = i;
                     break;
@@ -124,20 +182,20 @@ public class FileListActivity extends AppCompatActivity {
             if (boolean_folder) {
 
                 ArrayList<String> al_path = new ArrayList<>();
-                al_path.addAll(al_images.get(int_position).getAl_imagepath());
+                al_path.addAll(al_images.get(int_position).getAllImagesPath());
                 al_path.add(absolutePathOfImage);
-                al_images.get(int_position).setAl_imagepath(al_path);
+                al_images.get(int_position).setAllImagesPath(al_path);
 
             } else {
                 ArrayList<String> al_path = new ArrayList<>();
                 al_path.add(absolutePathOfImage);
                 ModelImages obj_model = new ModelImages();
-                obj_model.setStr_folder(cursor.getString(column_index_folder_name));
+                obj_model.setFolderName(cursor.getString(column_index_folder_name));
                 if (al_path.size() > 0) {
                     File f = new File(al_path.get(0));
-                    obj_model.setStr_folder_path(f.getParent());
+                    obj_model.setFolderPath(f.getParent());
                 }
-                obj_model.setAl_imagepath(al_path);
+                obj_model.setAllImagesPath(al_path);
 
                 al_images.add(obj_model);
 
@@ -149,9 +207,9 @@ public class FileListActivity extends AppCompatActivity {
 
 
         for (int i = 0; i < al_images.size(); i++) {
-            Log.e("FOLDER", al_images.get(i).getStr_folder());
-            for (int j = 0; j < al_images.get(i).getAl_imagepath().size(); j++) {
-                Log.e("FILE", al_images.get(i).getAl_imagepath().get(j));
+            Log.e("FOLDER", al_images.get(i).getFolderName());
+            for (int j = 0; j < al_images.get(i).getAllImagesPath().size(); j++) {
+                Log.e("FILE", al_images.get(i).getAllImagesPath().get(j));
             }
         }
         obj_adapter = new AdapterPhotosFolder(getApplicationContext(), al_images);
