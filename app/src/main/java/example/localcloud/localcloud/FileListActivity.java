@@ -26,15 +26,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.thegrizzlylabs.sardineandroid.Sardine;
-import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import example.localcloud.localcloud.dav.DavClientFactory;
 import example.localcloud.localcloud.sync.SyncTaskService;
 
 
@@ -54,7 +50,7 @@ public class FileListActivity extends AppCompatActivity {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Integer result = intent.getIntExtra("progress", 0);
+            Integer result = intent.getIntExtra(SyncTaskService.EXTRA_KEY_PROGRESS, 0);
             progressView.setProgress(result, true);
             if (progressView.getProgress() == 100) {
                 progressView.setVisibility(ProgressBar.INVISIBLE);
@@ -70,7 +66,7 @@ public class FileListActivity extends AppCompatActivity {
         this.progressView = findViewById(R.id.determinateBar);
         progressView.setVisibility(ProgressBar.INVISIBLE);
         this.fileUploadBroadcastReceiver = new FileUploadBroadcastReceiver();
-        IntentFilter updateIntentFilter = new IntentFilter("cejixo3.update");
+        IntentFilter updateIntentFilter = new IntentFilter(SyncTaskService.INTENT_ACTION_UPDATE_PROGRESS);
         updateIntentFilter.addCategory(Intent.CATEGORY_DEFAULT);
         registerReceiver(fileUploadBroadcastReceiver, updateIntentFilter);
 
@@ -81,19 +77,32 @@ public class FileListActivity extends AppCompatActivity {
             @Override
             public void onClick(final View view) {
                 progressView.setVisibility(ProgressBar.VISIBLE);
+                ArrayList<String> filesList = new ArrayList<String>();
                 for (int i = 0; i < al_images.size(); i++) {
                     String path = al_images.get(i).getFolderPath();
                     if (selectedState.containsKey(path) && selectedState.get(path).equals(true)) {
-                        Integer z = 0;
-                        for (String img :
-                                al_images.get(i).getAllImagesPath()) {
-                            z++;
-                            startService(syncTaskService.putExtra("percent", (z / al_images.get(i).getAllImagesPath().size()) * 100).putExtra("img_path", img));
-                        }
+                        filesList.addAll(al_images.get(i).getAllImagesPath());
                     }
                 }
+                startService(syncTaskService.putExtra(SyncTaskService.EXTRA_KEY_FILE_LIST, filesList));
             }
         });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         gv_folder = (GridView) findViewById(R.id.gv_folder);
         gv_folder.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
