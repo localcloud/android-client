@@ -6,7 +6,9 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.MergeCursor;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -21,6 +23,7 @@ import android.widget.Toast;
 
 import com.thegrizzlylabs.sardineandroid.Sardine;
 import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine;
+import com.thegrizzlylabs.sardineandroid.impl.SardineException;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -30,6 +33,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
+
+import example.localcloud.localcloud.dav.Dav;
+
 
 public class FileListActivity extends AppCompatActivity {
 
@@ -41,13 +48,15 @@ public class FileListActivity extends AppCompatActivity {
     private static final String TAG = "preview_log";
     private Map selectedState = new HashMap<String, Boolean>();
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_list);
 //http://192.168.31.156:5555
         final Sardine sardine = new OkHttpSardine();
-        sardine.setCredentials("nikolay", "nikolay_password", false);
+
+
         FloatingActionButton fab = findViewById(R.id.send_files);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,24 +71,10 @@ public class FileListActivity extends AppCompatActivity {
                                 ;
                                 for (String img :
                                         al_images.get(i).getAllImagesPath()) {
-                                    Log.d(TAG, "send image: " + img);
-                                    File file = new File(img);
-                                    int size = (int) file.length();
-                                    byte[] bytes = new byte[size];
-
-
-                                    try {
-                                        BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
-                                        buf.read(bytes, 0, bytes.length);
-                                        buf.close();
-                                        sardine.createDirectory("http://192.168.31.156:5555/" + al_images.get(i).getFolderPath());
-                                        sardine.put("http://192.168.31.156:5555/test.jpg" , bytes);
-                                    } catch (FileNotFoundException e) {
-                                        // TODO Auto-generated catch block
-                                        e.printStackTrace();
-                                    } catch (IOException e) {
-                                        // TODO Auto-generated catch block
-                                        e.printStackTrace();
+                                    if (Dav.client().put(img)) {
+                                        Log.d(TAG, String.format("image %s was sent successfully to the server", img));
+                                    }else {
+                                        Log.d(TAG, String.format("image %s didn't sent to the server, something went wrong", img));
                                     }
                                 }
                             }
