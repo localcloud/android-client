@@ -1,4 +1,4 @@
-package example.localcloud.localcloud;
+package example.localcloud.localcloud.activities;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -20,6 +20,8 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 
 import java.util.List;
+
+import example.localcloud.localcloud.R;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On

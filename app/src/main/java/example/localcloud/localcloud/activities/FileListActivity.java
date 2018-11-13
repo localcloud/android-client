@@ -1,11 +1,10 @@
-package example.localcloud.localcloud;
+package example.localcloud.localcloud.activities;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -27,27 +26,27 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import example.localcloud.localcloud.sync.SyncTaskService;
+import example.localcloud.localcloud.R;
+import example.localcloud.localcloud.contentProviders.MediaContentProvider;
+import example.localcloud.localcloud.intentServices.SyncTaskService;
 
 
 public class FileListActivity extends AppCompatActivity {
 
     public static ArrayList<ModelImages> al_images = new ArrayList<>();
-    boolean boolean_folder;
-    AdapterPhotosFolder obj_adapter;
     GridView gv_folder;
     private static final int REQUEST_PERMISSIONS = 100;
     private static final String TAG = "zzzz_preview_log";
     private Map selectedState = new HashMap<String, Boolean>();
     private FileUploadBroadcastReceiver fileUploadBroadcastReceiver;
     private ProgressBar progressView;
+    private MediaContentProvider mediaContentProvider = new MediaContentProvider(this);
 
     public class FileUploadBroadcastReceiver extends BroadcastReceiver {
 
@@ -100,10 +99,9 @@ public class FileListActivity extends AppCompatActivity {
 
                 TextView textView = view.findViewById(R.id.tv_folder);
                 if (textView != null) {
-                    String path = al_images.get(position).getFolderPath();
+                    String path = mediaContentProvider.fetch().get(position).getPath();
                     ImageView cl = view.findViewById(R.id.iv_image_cloud_enabled);
-                    Log.d(TAG, "long click " + position + "image folder: " + path);
-                    Resources.Theme t = view.getContext().getTheme();
+
                     if (selectedState.containsKey(path) && selectedState.get(path).equals(true)) {
                         selectedState.put(path, false);
                         cl.setVisibility(ImageView.INVISIBLE);
@@ -131,7 +129,7 @@ public class FileListActivity extends AppCompatActivity {
             }
         } else {
             Log.e("Else", "Else");
-            fn_imagespath();
+            syncImages();
         }
 
 
@@ -144,80 +142,8 @@ public class FileListActivity extends AppCompatActivity {
         unregisterReceiver(this.fileUploadBroadcastReceiver);
     }
 
-    public ArrayList<ModelImages> fn_imagespath() {
-        al_images.clear();
-
-        int int_position = 0;
-        Uri uri;
-        Cursor cursor;
-        int column_index_data, column_index_folder_name;
-
-        String absolutePathOfImage = null;
-        uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-
-        String[] projection = {MediaStore.MediaColumns.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
-
-        final String orderBy = MediaStore.Images.Media.DATE_TAKEN;
-        cursor = new MergeCursor(
-                new Cursor[]{
-                        getApplicationContext().getContentResolver().query(uri, projection, null, null, orderBy + " DESC"),
-                        getApplicationContext().getContentResolver().query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projection, null, null, orderBy + " DESC"),
-                }
-        );
-
-        column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-        column_index_folder_name = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-        while (cursor.moveToNext()) {
-            absolutePathOfImage = cursor.getString(column_index_data);
-            Log.e("Column", absolutePathOfImage);
-            Log.e("Folder", cursor.getString(column_index_folder_name));
-            for (int i = 0; i < al_images.size(); i++) {
-                if (al_images.get(i).getFolderName().equals(cursor.getString(column_index_folder_name))) {
-                    boolean_folder = true;
-                    int_position = i;
-                    break;
-                } else {
-                    boolean_folder = false;
-                }
-            }
-
-
-            if (boolean_folder) {
-
-                ArrayList<String> al_path = new ArrayList<>();
-                al_path.addAll(al_images.get(int_position).getAllImagesPath());
-                al_path.add(absolutePathOfImage);
-                al_images.get(int_position).setAllImagesPath(al_path);
-
-            } else {
-                ArrayList<String> al_path = new ArrayList<>();
-                al_path.add(absolutePathOfImage);
-                ModelImages obj_model = new ModelImages();
-                obj_model.setFolderName(cursor.getString(column_index_folder_name));
-                if (al_path.size() > 0) {
-                    File f = new File(al_path.get(0));
-                    obj_model.setFolderPath(f.getParent());
-                }
-                obj_model.setAllImagesPath(al_path);
-
-                al_images.add(obj_model);
-
-
-            }
-
-
-        }
-
-
-        for (int i = 0; i < al_images.size(); i++) {
-            Log.e("FOLDER", al_images.get(i).getFolderName());
-            for (int j = 0; j < al_images.get(i).getAllImagesPath().size(); j++) {
-                Log.e("FILE", al_images.get(i).getAllImagesPath().get(j));
-            }
-        }
-        obj_adapter = new AdapterPhotosFolder(getApplicationContext(), al_images);
-        gv_folder.setAdapter(obj_adapter);
-        return al_images;
+    public void syncImages() {
+        gv_folder.setAdapter(new AdapterPhotosFolder(getApplicationContext(), mediaContentProvider.fetch()));
     }
 
     @Override
@@ -228,7 +154,7 @@ public class FileListActivity extends AppCompatActivity {
             case REQUEST_PERMISSIONS: {
                 for (int i = 0; i < grantResults.length; i++) {
                     if (grantResults.length > 0 && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                        fn_imagespath();
+                        syncImages();
                     } else {
                         Toast.makeText(FileListActivity.this, "The app was not allowed to read or write to your storage. Hence, it cannot function properly. Please consider granting it this permission", Toast.LENGTH_LONG).show();
                     }

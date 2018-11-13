@@ -1,4 +1,4 @@
-package example.localcloud.localcloud;
+package example.localcloud.localcloud.activities;
 
 import java.util.ArrayList;
 

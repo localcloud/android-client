@@ -3,17 +3,17 @@
     <!-- These settings headers are only used on tablets. -->
 
     <header
-        android:fragment="example.localcloud.localcloud.SettingsActivity$GeneralPreferenceFragment"
+        android:fragment="example.localcloud.localcloud.activities.SettingsActivity$GeneralPreferenceFragment"
         android:icon="@drawable/ic_info_black_24dp"
         android:title="@string/pref_header_general" />
 
     <header
-        android:fragment="example.localcloud.localcloud.SettingsActivity$NotificationPreferenceFragment"
+        android:fragment="example.localcloud.localcloud.activities.SettingsActivity$NotificationPreferenceFragment"
         android:icon="@drawable/ic_notifications_black_24dp"
         android:title="@string/pref_header_notifications" />
 
     <header
-        android:fragment="example.localcloud.localcloud.SettingsActivity$DataSyncPreferenceFragment"
+        android:fragment="example.localcloud.localcloud.activities.SettingsActivity$DataSyncPreferenceFragment"
         android:icon="@drawable/ic_sync_black_24dp"
         android:title="@string/pref_header_data_sync" />
 

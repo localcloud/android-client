@@ -1,4 +1,4 @@
-package example.localcloud.localcloud.sync;
+package example.localcloud.localcloud.intentServices;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -7,8 +7,8 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-import example.localcloud.localcloud.dav.DavClientFactory;
-import example.localcloud.localcloud.dav.DavContextClient;
+import example.localcloud.localcloud.syncDrivers.DavClientFactory;
+import example.localcloud.localcloud.syncDrivers.DavContextClient;
 
 public class SyncTaskService extends IntentService {
 

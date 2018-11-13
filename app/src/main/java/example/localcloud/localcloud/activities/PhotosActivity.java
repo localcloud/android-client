@@ -1,8 +1,10 @@
-package example.localcloud.localcloud;
+package example.localcloud.localcloud.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.GridView;
+
+import example.localcloud.localcloud.R;
 
 
 public class PhotosActivity extends AppCompatActivity {

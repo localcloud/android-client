@@ -1,6 +1,7 @@
-package example.localcloud.localcloud;
+package example.localcloud.localcloud.activities;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,27 +12,34 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
+
 import java.util.ArrayList;
 
+import example.localcloud.localcloud.R;
 
-public class AdapterPhotosFolder extends ArrayAdapter<ModelImages> {
+
+public class GridViewAdapter extends ArrayAdapter<ModelImages> {
 
     Context context;
     ViewHolder viewHolder;
     ArrayList<ModelImages> al_menu = new ArrayList<>();
+    int int_position;
 
 
-    public AdapterPhotosFolder(Context context, ArrayList<ModelImages> al_menu) {
+    public GridViewAdapter(Context context, ArrayList<ModelImages> al_menu, int int_position) {
         super(context, R.layout.adapter_photosfolder, al_menu);
         this.al_menu = al_menu;
         this.context = context;
+        this.int_position = int_position;
 
 
     }
 
     @Override
     public int getCount() {
-        return al_menu.size();
+
+        Log.e("ADAPTER LIST SIZE", al_menu.get(int_position).getAllImagesPath().size() + "");
+        return al_menu.get(int_position).getAllImagesPath().size();
     }
 
     @Override
@@ -41,8 +49,8 @@ public class AdapterPhotosFolder extends ArrayAdapter<ModelImages> {
 
     @Override
     public int getViewTypeCount() {
-        if (al_menu.size() > 0) {
-            return al_menu.size();
+        if (al_menu.get(int_position).getAllImagesPath().size() > 0) {
+            return al_menu.get(int_position).getAllImagesPath().size();
         } else {
             return 1;
         }
@@ -71,16 +79,13 @@ public class AdapterPhotosFolder extends ArrayAdapter<ModelImages> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.tv_foldern.setText(al_menu.get(position).getFolderName());
-        viewHolder.tv_foldersize.setText(al_menu.get(position).getAllImagesPath().size() + "");
+        viewHolder.tv_foldern.setVisibility(View.GONE);
+        viewHolder.tv_foldersize.setVisibility(View.GONE);
 
 
-        Glide
-                .with(context)
-                .load("file://" + al_menu.get(position).getAllImagesPath().get(0))
+        Glide.with(context).load("file://" + al_menu.get(int_position).getAllImagesPath().get(position))
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
-                .centerCrop()
                 .into(viewHolder.iv_image);
 
 
@@ -91,5 +96,7 @@ public class AdapterPhotosFolder extends ArrayAdapter<ModelImages> {
     private static class ViewHolder {
         TextView tv_foldern, tv_foldersize;
         ImageView iv_image;
+
+
     }
 }
