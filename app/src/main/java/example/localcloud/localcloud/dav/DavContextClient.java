@@ -4,14 +4,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 
 import com.thegrizzlylabs.sardineandroid.Sardine;
 import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine;
 import com.thegrizzlylabs.sardineandroid.impl.SardineException;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
@@ -77,6 +76,15 @@ public class DavContextClient {
         return false;
     }
 
+    private String getMimeType(String url) {
+        String type = null;
+        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+        if (extension != null) {
+            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        }
+        return type;
+    }
+
     /**
      * Sends image on a server
      *
@@ -85,19 +93,9 @@ public class DavContextClient {
      */
     public boolean put(String path) {
         File file = new File(path);
-        int size = (int) file.length();
-        byte[] bytes = new byte[size];
-        try {
-            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
-            buf.read(bytes, 0, bytes.length);
-            buf.close();
-        } catch (IOException e) {
-            Log.d(TAG, e.getMessage());
-            return false;
-        }
         if (exist(file.getParent()) || this.dirRecursive(file.getParent())) {
             try {
-                getSardine().put(buildUrl(path), bytes);
+                getSardine().put(buildUrl(path), file, this.getMimeType(path));
             } catch (SardineException e) {
                 Log.d(TAG, String.valueOf(e.getStatusCode()));
                 return false;
