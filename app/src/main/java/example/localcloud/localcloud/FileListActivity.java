@@ -1,6 +1,7 @@
 package example.localcloud.localcloud;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -30,6 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import example.localcloud.localcloud.dav.DavClientFactory;
+import example.localcloud.localcloud.sync.SyncTaskService;
 
 
 public class FileListActivity extends AppCompatActivity {
@@ -47,30 +49,21 @@ public class FileListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_list);
-
+        final Intent syncTaskService = new Intent(this, SyncTaskService.class);
         FloatingActionButton fab = findViewById(R.id.send_files);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (int i = 0; i < al_images.size(); i++) {
-                            String path = al_images.get(i).getFolderPath();
-                            if (selectedState.containsKey(path) && selectedState.get(path).equals(true)) {
-                                Log.d(TAG, "send folder: " + al_images.get(i).getFolderPath());
-                                for (String img :
-                                        al_images.get(i).getAllImagesPath()) {
-                                    if (DavClientFactory.client(view.getContext()).put(img)) {
-                                        Log.d(TAG, String.format("image %s was sent successfully to the server", img));
-                                    }else {
-                                        Log.d(TAG, String.format("image %s didn't sent to the server, something went wrong", img));
-                                    }
-                                }
-                            }
+                for (int i = 0; i < al_images.size(); i++) {
+                    String path = al_images.get(i).getFolderPath();
+                    if (selectedState.containsKey(path) && selectedState.get(path).equals(true)) {
+                        Log.d(TAG, "send folder: " + al_images.get(i).getFolderPath());
+                        for (String img :
+                                al_images.get(i).getAllImagesPath()) {
+                            startService(syncTaskService.putExtra("img_path", img));
                         }
                     }
-                }).start();
+                }
             }
         });
 
