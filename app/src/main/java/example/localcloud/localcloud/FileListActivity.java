@@ -23,19 +23,13 @@ import android.widget.Toast;
 
 import com.thegrizzlylabs.sardineandroid.Sardine;
 import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine;
-import com.thegrizzlylabs.sardineandroid.impl.SardineException;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
-import example.localcloud.localcloud.dav.Dav;
+import example.localcloud.localcloud.dav.DavClientFactory;
 
 
 public class FileListActivity extends AppCompatActivity {
@@ -53,14 +47,11 @@ public class FileListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_list);
-//http://192.168.31.156:5555
-        final Sardine sardine = new OkHttpSardine();
-
 
         FloatingActionButton fab = findViewById(R.id.send_files);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(final View view) {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -68,10 +59,9 @@ public class FileListActivity extends AppCompatActivity {
                             String path = al_images.get(i).getFolderPath();
                             if (selectedState.containsKey(path) && selectedState.get(path).equals(true)) {
                                 Log.d(TAG, "send folder: " + al_images.get(i).getFolderPath());
-                                ;
                                 for (String img :
                                         al_images.get(i).getAllImagesPath()) {
-                                    if (Dav.client().put(img)) {
+                                    if (DavClientFactory.client(view.getContext()).put(img)) {
                                         Log.d(TAG, String.format("image %s was sent successfully to the server", img));
                                     }else {
                                         Log.d(TAG, String.format("image %s didn't sent to the server, something went wrong", img));

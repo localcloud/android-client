@@ -1,13 +1,13 @@
 package example.localcloud.localcloud.dav;
 
-import android.bluetooth.BluetoothAdapter;
-import android.support.annotation.NonNull;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.thegrizzlylabs.sardineandroid.Sardine;
 import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine;
 import com.thegrizzlylabs.sardineandroid.impl.SardineException;
-import com.thegrizzlylabs.sardineandroid.util.SardineUtil;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -15,42 +15,32 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
-public class Dav {
+public class DavContextClient {
+
     private static String TAG = "lc_dav_client";
-    private static Dav instance;
     private Sardine sardine;
-    private String address = "http://192.168.31.156:5566";
+    private String serverAddress;
 
-    private void Dav() {
-        Log.d(TAG, "New Instance DAV CONSTRUCT!");
-    }
+    DavContextClient(Context context) {
+        this.sardine = new OkHttpSardine();
+        this.sardine.setCredentials("nikolay", "nikolay_password", false);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+        this.serverAddress = sharedPref.getString("server_address", "https://local-cloud.com");
 
-    public static Dav client() {
-        if (Dav.instance == null) {
-            Log.d(TAG, "New Instance DAV");
-            Dav.instance = new Dav();
-        }
-        return instance;
-    }
-
-
-    private String buildUrl(String path) {
-        if (path.startsWith("/")) {
-            return this.address + path;
-        }
-        return this.address + "/" + path;
     }
 
     private Sardine getSardine() {
-        if (this.sardine == null) {
-            this.sardine = new OkHttpSardine();
-            this.sardine.setCredentials("nikolay", "nikolay_password", false);
-        }
         return this.sardine;
     }
 
+    private String buildUrl(String path) {
+        if (path.startsWith("/")) {
+            return this.serverAddress + path;
+        }
+        return this.serverAddress + "/" + path;
+    }
 
-    @NonNull
+
     private boolean dirRecursive(String path) {
         StringBuilder currPath = new StringBuilder("");
         String[] parts = path.split(Pattern.quote("/"));
