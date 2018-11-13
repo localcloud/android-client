@@ -1,7 +1,10 @@
 package example.localcloud.localcloud;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -19,6 +22,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,26 +45,50 @@ public class FileListActivity extends AppCompatActivity {
     AdapterPhotosFolder obj_adapter;
     GridView gv_folder;
     private static final int REQUEST_PERMISSIONS = 100;
-    private static final String TAG = "preview_log";
+    private static final String TAG = "zzzz_preview_log";
     private Map selectedState = new HashMap<String, Boolean>();
+    private FileUploadBroadcastReceiver fileUploadBroadcastReceiver;
+    private ProgressBar progressView;
+
+    public class FileUploadBroadcastReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Integer result = intent.getIntExtra("progress", 0);
+            progressView.setProgress(result, true);
+            if (progressView.getProgress() == 100) {
+                progressView.setVisibility(ProgressBar.INVISIBLE);
+            }
+        }
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_list);
+        this.progressView = findViewById(R.id.determinateBar);
+        progressView.setVisibility(ProgressBar.INVISIBLE);
+        this.fileUploadBroadcastReceiver = new FileUploadBroadcastReceiver();
+        IntentFilter updateIntentFilter = new IntentFilter("cejixo3.update");
+        updateIntentFilter.addCategory(Intent.CATEGORY_DEFAULT);
+        registerReceiver(fileUploadBroadcastReceiver, updateIntentFilter);
+
+
         final Intent syncTaskService = new Intent(this, SyncTaskService.class);
         FloatingActionButton fab = findViewById(R.id.send_files);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
+                progressView.setVisibility(ProgressBar.VISIBLE);
                 for (int i = 0; i < al_images.size(); i++) {
                     String path = al_images.get(i).getFolderPath();
                     if (selectedState.containsKey(path) && selectedState.get(path).equals(true)) {
-                        Log.d(TAG, "send folder: " + al_images.get(i).getFolderPath());
+                        Integer z = 0;
                         for (String img :
                                 al_images.get(i).getAllImagesPath()) {
-                            startService(syncTaskService.putExtra("img_path", img));
+                            z++;
+                            startService(syncTaskService.putExtra("percent", (z / al_images.get(i).getAllImagesPath().size()) * 100).putExtra("img_path", img));
                         }
                     }
                 }
@@ -117,6 +145,12 @@ public class FileListActivity extends AppCompatActivity {
         }
 
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(this.fileUploadBroadcastReceiver);
     }
 
     public ArrayList<ModelImages> fn_imagespath() {
