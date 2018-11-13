@@ -13,6 +13,7 @@ import com.thegrizzlylabs.sardineandroid.impl.SardineException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.regex.Pattern;
 
 public class DavContextClient {
@@ -21,6 +22,7 @@ public class DavContextClient {
     private Sardine sardine;
     private String serverAddress;
     private String id;
+    private HashMap<String, Boolean> cache = new HashMap<>();
 
     DavContextClient(Context context) {
         this.id = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -66,12 +68,19 @@ public class DavContextClient {
                 }
             }
         }
+        this.cache.put(buildUrl(path), true);
         return true;
     }
 
     private boolean exist(String path) {
+        String addr = buildUrl(path);
+        if (this.cache.containsKey(addr)) {
+            return this.cache.get(addr);
+        }
         try {
-            return getSardine().exists(buildUrl(path));
+            boolean res = getSardine().exists(addr);
+            this.cache.put(buildUrl(path), res);
+            return res;
         } catch (IOException e) {
             Log.d(TAG, e.getMessage());
         }
@@ -97,11 +106,13 @@ public class DavContextClient {
         File file = new File(path);
         if (exist(file.getParent()) || this.dirRecursive(file.getParent())) {
             try {
-                getSardine().put(buildUrl(path), file, this.getMimeType(path));
+                getSardine().put(buildUrl(path), file, this.getMimeType(path), true);
             } catch (SardineException e) {
                 Log.d(TAG, String.valueOf(e.getStatusCode()));
                 return false;
             } catch (IOException e) {
+                Log.d(TAG, String.format("image %s error: %s", buildUrl(path), e.getMessage()));
+                e.printStackTrace();
                 return false;
             }
         }

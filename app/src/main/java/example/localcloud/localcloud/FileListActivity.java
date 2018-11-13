@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -22,9 +23,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -51,6 +54,7 @@ public class FileListActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Integer result = intent.getIntExtra(SyncTaskService.EXTRA_KEY_PROGRESS, 0);
+            Log.d(TAG, String.format("progress %d", result));
             progressView.setProgress(result, true);
             if (progressView.getProgress() == 100) {
                 progressView.setVisibility(ProgressBar.INVISIBLE);
@@ -89,21 +93,6 @@ public class FileListActivity extends AppCompatActivity {
         });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         gv_folder = (GridView) findViewById(R.id.gv_folder);
         gv_folder.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -112,28 +101,20 @@ public class FileListActivity extends AppCompatActivity {
                 TextView textView = view.findViewById(R.id.tv_folder);
                 if (textView != null) {
                     String path = al_images.get(position).getFolderPath();
+                    ImageView cl = view.findViewById(R.id.iv_image_cloud_enabled);
                     Log.d(TAG, "long click " + position + "image folder: " + path);
                     Resources.Theme t = view.getContext().getTheme();
                     if (selectedState.containsKey(path) && selectedState.get(path).equals(true)) {
                         selectedState.put(path, false);
-                        textView.setTextColor(getResources().getColor(R.color.colorBlack, t));
+                        cl.setVisibility(ImageView.INVISIBLE);
                     } else {
                         selectedState.put(path, true);
-                        textView.setTextColor(getResources().getColor(R.color.colorAccent, t));
+                        cl.setVisibility(ImageView.VISIBLE);
                     }
                 }
                 return false;
             }
         });
-
-        /*gv_folder.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(getApplicationContext(), PhotosActivity.class);
-                intent.putExtra("value", i);
-                startActivity(intent);
-            }
-        });*/
 
 
         if ((ContextCompat.checkSelfPermission(getApplicationContext(),
@@ -155,6 +136,7 @@ public class FileListActivity extends AppCompatActivity {
 
 
     }
+
 
     @Override
     protected void onDestroy() {
