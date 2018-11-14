@@ -23,21 +23,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activities.FileListActivity"
-            android:parentActivityName=".activities.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainActivity" />
-        </activity>
         <activity android:name=".activities.PhotosActivity" />
         <activity
             android:name=".activities.SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
+            android:label="@string/title_activity_settings" />
+
         <service
             android:name=".intentServices.SyncTaskService"
-            android:exported="false"/>
+            android:exported="false" />
 
+        <activity
+            android:name=".activities.device.FolderListActivity"
+            android:label="@string/title_activity_folder_list"
+            android:parentActivityName=".activities.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="example.localcloud.localcloud.activities.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

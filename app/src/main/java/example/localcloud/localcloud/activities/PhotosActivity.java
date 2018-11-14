@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.GridView;
 
 import example.localcloud.localcloud.R;
+import example.localcloud.localcloud.activities.device.FolderListActivity;
+import example.localcloud.localcloud.contentProviders.MediaContentProvider;
 
 
 public class PhotosActivity extends AppCompatActivity {
@@ -16,10 +18,10 @@ public class PhotosActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_file_list);
+        setContentView(R.layout.activity_folder_list);
         gridView = (GridView) findViewById(R.id.gv_folder);
         int_position = getIntent().getIntExtra("value", 0);
-        adapter = new GridViewAdapter(this, FileListActivity.al_images, int_position);
+        adapter = new GridViewAdapter(this, FolderListActivity.al_images, int_position);
         gridView.setAdapter(adapter);
     }
 }

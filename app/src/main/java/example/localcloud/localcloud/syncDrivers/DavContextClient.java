@@ -26,11 +26,12 @@ public class DavContextClient {
 
     DavContextClient(Context context) {
         this.id = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-        this.sardine = new OkHttpSardine();
-        this.sardine.setCredentials("nikolay", "nikolay_password", false);
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
         this.serverAddress = sharedPref.getString("server_address", "https://local-cloud.com");
-
+        String serverLogin = sharedPref.getString("login", "");
+        String serverPassword = sharedPref.getString("password", "");
+        this.sardine = new OkHttpSardine();
+        this.sardine.setCredentials(serverLogin, serverPassword, true);
     }
 
     private Sardine getSardine() {

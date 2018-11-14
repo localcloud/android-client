@@ -1,4 +1,4 @@
-package example.localcloud.localcloud.activities;
+package example.localcloud.localcloud.activities.device;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
@@ -6,18 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.database.Cursor;
-import android.database.MergeCursor;
-import android.net.Uri;
 import android.os.Build;
-import android.provider.MediaStore;
+import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -27,18 +22,17 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import example.localcloud.localcloud.R;
+import example.localcloud.localcloud.activities.AdapterPhotosFolder;
+import example.localcloud.localcloud.activities.ModelImages;
 import example.localcloud.localcloud.contentProviders.MediaContentProvider;
 import example.localcloud.localcloud.intentServices.SyncTaskService;
 
-
-public class FileListActivity extends AppCompatActivity {
-
+public class FolderListActivity extends AppCompatActivity {
     public static ArrayList<ModelImages> al_images = new ArrayList<>();
     GridView gv_folder;
     private static final int REQUEST_PERMISSIONS = 100;
@@ -46,7 +40,7 @@ public class FileListActivity extends AppCompatActivity {
     private Map selectedState = new HashMap<String, Boolean>();
     private FileUploadBroadcastReceiver fileUploadBroadcastReceiver;
     private ProgressBar progressView;
-    private MediaContentProvider mediaContentProvider = new MediaContentProvider(this);
+    private MediaContentProvider mediaContentProvider = MediaContentProvider.instance(this);
 
     public class FileUploadBroadcastReceiver extends BroadcastReceiver {
 
@@ -65,7 +59,7 @@ public class FileListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_file_list);
+        setContentView(R.layout.activity_folder_list);
         this.progressView = findViewById(R.id.determinateBar);
         progressView.setVisibility(ProgressBar.INVISIBLE);
         this.fileUploadBroadcastReceiver = new FileUploadBroadcastReceiver();
@@ -80,14 +74,7 @@ public class FileListActivity extends AppCompatActivity {
             @Override
             public void onClick(final View view) {
                 progressView.setVisibility(ProgressBar.VISIBLE);
-                ArrayList<String> filesList = new ArrayList<String>();
-                for (int i = 0; i < al_images.size(); i++) {
-                    String path = al_images.get(i).getFolderPath();
-                    if (selectedState.containsKey(path) && selectedState.get(path).equals(true)) {
-                        filesList.addAll(al_images.get(i).getAllImagesPath());
-                    }
-                }
-                startService(syncTaskService.putExtra(SyncTaskService.EXTRA_KEY_FILE_LIST, filesList));
+                startService(syncTaskService.putExtra(SyncTaskService.EXTRA_KEY_FILE_LIST, mediaContentProvider.fetchOnlyPath()));
             }
         });
 
@@ -118,12 +105,12 @@ public class FileListActivity extends AppCompatActivity {
         if ((ContextCompat.checkSelfPermission(getApplicationContext(),
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(getApplicationContext(),
                 Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-            if ((ActivityCompat.shouldShowRequestPermissionRationale(FileListActivity.this,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) && (ActivityCompat.shouldShowRequestPermissionRationale(FileListActivity.this,
+            if ((ActivityCompat.shouldShowRequestPermissionRationale(FolderListActivity.this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) && (ActivityCompat.shouldShowRequestPermissionRationale(FolderListActivity.this,
                     Manifest.permission.READ_EXTERNAL_STORAGE))) {
 
             } else {
-                ActivityCompat.requestPermissions(FileListActivity.this,
+                ActivityCompat.requestPermissions(FolderListActivity.this,
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
                         REQUEST_PERMISSIONS);
             }
@@ -156,10 +143,11 @@ public class FileListActivity extends AppCompatActivity {
                     if (grantResults.length > 0 && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                         syncImages();
                     } else {
-                        Toast.makeText(FileListActivity.this, "The app was not allowed to read or write to your storage. Hence, it cannot function properly. Please consider granting it this permission", Toast.LENGTH_LONG).show();
+                        Toast.makeText(FolderListActivity.this, "The app was not allowed to read or write to your storage. Hence, it cannot function properly. Please consider granting it this permission", Toast.LENGTH_LONG).show();
                     }
                 }
             }
         }
     }
+
 }

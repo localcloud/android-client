@@ -20,8 +20,18 @@ public class MediaContentProvider implements ISyncContentProvider {
     private Context ctx;
     private HashMap<String, ArrayList<FileModel>> filterMap = new HashMap<>();
 
-    public MediaContentProvider(Context ctx) {
+    private static MediaContentProvider i;
+
+    private MediaContentProvider(Context ctx) {
         this.ctx = ctx;
+    }
+
+
+    public static MediaContentProvider instance(Context ctx) {
+        if (MediaContentProvider.i == null) {
+            MediaContentProvider.i = new MediaContentProvider(ctx);
+        }
+        return MediaContentProvider.i;
     }
 
     private void clear() {
@@ -85,6 +95,17 @@ public class MediaContentProvider implements ISyncContentProvider {
         }
         this.filterMap.clear();
         return this.folders;
+    }
+
+
+    public ArrayList<String> fetchOnlyPath() {
+        ArrayList<String> res = new ArrayList<>();
+        for (FolderModel folderModel : this.fetch()) {
+            for (FileModel fileModel : folderModel.getFiles()) {
+                res.add(fileModel.getPath());
+            }
+        }
+        return res;
     }
 
     /**
