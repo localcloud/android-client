@@ -6,13 +6,34 @@
     android:layout_height="match_parent"
     tools:context=".activities.device.FilesListActivity">
 
-    <GridView
-        android:id="@+id/gv_files"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="10dp"
-        android:numColumns="2" />
+        android:paddingTop="10dp"
+        android:layout_marginRight="10dp">
 
+        <Switch
+            android:id="@+id/toggleSync"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:gravity="start"
+            android:text="@string/titleToggleSync"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <GridView
+            android:id="@+id/gv_files"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="0dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="0dp"
+            android:numColumns="4" />
+    </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>
