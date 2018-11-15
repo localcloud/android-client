@@ -1,11 +1,14 @@
 package example.localcloud.localcloud.adapters;
 
 import android.content.Context;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -60,13 +63,22 @@ public class FolderAdapter extends ArrayAdapter<FolderModel> {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
 
-        if (convertView == null) {
 
+        float density = context.getResources().getDisplayMetrics().density;
+        float dpHeight = context.getResources().getDisplayMetrics().heightPixels / density / 2;
+        float dpWidth = context.getResources().getDisplayMetrics().widthPixels / density / 2;
+
+
+        if (convertView == null) {
             viewHolder = new ViewHolder();
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.adapter_photosfolder, parent, false);
             viewHolder.tv_foldern = (TextView) convertView.findViewById(R.id.tv_folder);
             viewHolder.tv_foldersize = (TextView) convertView.findViewById(R.id.tv_folder2);
             viewHolder.iv_image = (ImageView) convertView.findViewById(R.id.iv_image);
+            viewHolder.iv_image.setLayoutParams(new LinearLayout.LayoutParams(
+                    context.getResources().getDisplayMetrics().widthPixels / 2 - 10,
+                    context.getResources().getDisplayMetrics().widthPixels / 2 - 10
+            ));
 
 
             convertView.setTag(viewHolder);
@@ -74,7 +86,7 @@ public class FolderAdapter extends ArrayAdapter<FolderModel> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.tv_foldern.setText(String.format("%s-%s", folderModels.get(position).getName(), folderModels.get(position).getPk()));
+        viewHolder.tv_foldern.setText(String.format("%s", folderModels.get(position).getName()));
         viewHolder.tv_foldersize.setText(String.format("%s", folderModels.get(position).countFiles()));
 
 
