@@ -100,6 +100,7 @@ public class MediaContentProvider implements ISyncContentProvider {
         }
         this.scanned = true;
         this.filterMap.clear();
+        cursor.close();
         return this.folders;
     }
 
