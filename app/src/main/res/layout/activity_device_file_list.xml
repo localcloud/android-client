@@ -10,8 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
-        android:paddingTop="10dp"
-        android:layout_marginRight="10dp">
+        android:layout_marginRight="10dp"
+        android:paddingTop="10dp">
 
         <Switch
             android:id="@+id/toggleSync"
@@ -20,19 +20,34 @@
             android:checked="false"
             android:gravity="start"
             android:text="@string/titleToggleSync"
-            android:textSize="16sp" />
+            android:textColor="@color/colorGrey"
+            android:textSize="18sp" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="45dp"
+        android:layout_marginRight="10dp">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorLightGrey" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="45dp">
 
         <GridView
             android:id="@+id/gv_files"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="0dp"
-            android:layout_marginTop="20dp"
             android:layout_marginRight="0dp"
             android:numColumns="4" />
     </LinearLayout>
