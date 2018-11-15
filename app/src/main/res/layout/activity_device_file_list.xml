@@ -49,6 +49,6 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="0dp"
             android:layout_marginRight="0dp"
-            android:numColumns="4" />
+            android:numColumns="2" />
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

@@ -3,8 +3,10 @@ package example.localcloud.localcloud.activities.device;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.GridView;
+import android.widget.Switch;
 
 import example.localcloud.localcloud.R;
+import example.localcloud.localcloud.activities.device.listeners.OnSyncToggleChanged;
 import example.localcloud.localcloud.adapters.FilesAdapter;
 import example.localcloud.localcloud.contentProviders.MediaContentProvider;
 
@@ -23,5 +25,10 @@ public class FilesListActivity extends AppCompatActivity {
         setTitle(MediaContentProvider.instance(this).fetch().get(position).getName());
         adapter = new FilesAdapter(this, MediaContentProvider.instance(this).fetch(), position);
         gridView.setAdapter(adapter);
+
+
+        Switch toggleSync = findViewById(R.id.toggleSync);
+        toggleSync.setChecked(MediaContentProvider.instance(this).fetch().get(position).isSyncEnabled());
+        toggleSync.setOnCheckedChangeListener(new OnSyncToggleChanged(MediaContentProvider.instance(this).fetch().get(position)));
     }
 }

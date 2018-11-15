@@ -74,7 +74,7 @@ public class FolderAdapter extends ArrayAdapter<FolderModel> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.tv_foldern.setText(folderModels.get(position).getName());
+        viewHolder.tv_foldern.setText(String.format("%s-%s", folderModels.get(position).getName(), folderModels.get(position).getPk()));
         viewHolder.tv_foldersize.setText(String.format("%s", folderModels.get(position).countFiles()));
 
 

@@ -5,11 +5,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.MergeCursor;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+
+import example.localcloud.localcloud.db.Db;
 import example.localcloud.localcloud.models.FileModel;
 import example.localcloud.localcloud.models.FolderModel;
 
@@ -18,12 +21,14 @@ public class MediaContentProvider implements ISyncContentProvider {
     private ArrayList<FolderModel> folders = new ArrayList<>();
     private boolean scanned = false;
     private Context ctx;
+    private Db db;
     private HashMap<String, ArrayList<FileModel>> filterMap = new HashMap<>();
 
     private static MediaContentProvider i;
 
     private MediaContentProvider(Context ctx) {
         this.ctx = ctx;
+        this.db = new Db(ctx);
     }
 
 
@@ -87,11 +92,11 @@ public class MediaContentProvider implements ISyncContentProvider {
             File file = new File(cursor.getString(colData));
             String bucketName = cursor.getString(colBucket);
             if (file.getParent().endsWith(bucketName)) {
-                this.addFileToHashMap(new FileModel(file.getPath()));
+                this.addFileToHashMap(new FileModel(this.db, file.getPath()));
             }
         }
         for (String folder : this.filterMap.keySet()) {
-            this.folders.add(new FolderModel(folder, this.filterMap.get(folder)));
+            this.folders.add(new FolderModel(this.db, folder, this.filterMap.get(folder)));
         }
         this.scanned = true;
         this.filterMap.clear();
