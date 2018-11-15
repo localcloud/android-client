@@ -104,8 +104,27 @@ public class MediaContentProvider implements ISyncContentProvider {
         return this.folders;
     }
 
+    public ArrayList<FolderModel> fetchForSync() {
+        ArrayList<FolderModel> fm = new ArrayList<>();
+        for (FolderModel folderModel : this.fetch()) {
+            if (folderModel.isSyncEnabled()) {
+                fm.add(folderModel);
+            }
+        }
+        return fm;
+    }
 
-    public ArrayList<String> fetchOnlyPath() {
+    public ArrayList<String> fetchOnlyPathForSync() {
+        ArrayList<String> res = new ArrayList<>();
+        for (FolderModel folderModel : this.fetchForSync()) {
+            for (FileModel fileModel : folderModel.getFiles()) {
+                res.add(fileModel.getPath());
+            }
+        }
+        return res;
+    }
+
+    private ArrayList<String> fetchOnlyPath() {
         ArrayList<String> res = new ArrayList<>();
         for (FolderModel folderModel : this.fetch()) {
             for (FileModel fileModel : folderModel.getFiles()) {

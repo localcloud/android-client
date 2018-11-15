@@ -6,12 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".activities.device.FoldersListActivity">
 
-    <ProgressBar
-        android:id="@+id/determinateBar"
-        style="@style/MyProgressBar"
-        android:layout_width="fill_parent"
-        android:layout_height="10dp"
-        android:progress="0" />
+
 
     <GridView
         android:id="@+id/gv_folder"
@@ -21,13 +16,5 @@
         android:layout_marginTop="20dp"
         android:layout_marginRight="10dp"
         android:numColumns="2" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/send_files"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_cloud_upload_white_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>

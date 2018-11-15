@@ -7,6 +7,8 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import example.localcloud.localcloud.models.FileModel;
+import example.localcloud.localcloud.models.FolderModel;
 import example.localcloud.localcloud.syncDrivers.DavClientFactory;
 import example.localcloud.localcloud.syncDrivers.DavContextClient;
 

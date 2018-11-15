@@ -3,13 +3,13 @@ package example.localcloud.localcloud.models;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import example.localcloud.localcloud.db.Db;
 
-public class FolderModel extends APathName implements Comparable {
+public class FolderModel extends APathName implements Comparable, Serializable {
 
     private boolean syncEnabled = false;
     private String path;
