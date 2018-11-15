@@ -23,9 +23,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.PhotosActivity" />
+
         <activity
-            android:name=".activities.SettingsActivity"
+            android:name=".activities.settings.SettingsActivity"
             android:label="@string/title_activity_settings" />
 
         <service
@@ -33,12 +33,20 @@
             android:exported="false" />
 
         <activity
-            android:name=".activities.device.FolderListActivity"
+            android:name=".activities.device.FoldersListActivity"
             android:label="@string/title_activity_folder_list"
             android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="example.localcloud.localcloud.activities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".activities.device.FilesListActivity"
+            android:label="@string/title_activity_file_list"
+            android:parentActivityName=".activities.device.FoldersListActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="example.localcloud.localcloud.activities.device.FoldersListActivity" />
         </activity>
     </application>
 

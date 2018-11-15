@@ -2,9 +2,6 @@ package example.localcloud.localcloud.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -15,7 +12,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import example.localcloud.localcloud.R;
-import example.localcloud.localcloud.activities.device.FolderListActivity;
+import example.localcloud.localcloud.activities.device.FoldersListActivity;
+import example.localcloud.localcloud.activities.settings.SettingsActivity;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -87,7 +85,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_on_device) {
-            Intent intent = new Intent(this, FolderListActivity.class);
+            Intent intent = new Intent(this, FoldersListActivity.class);
             this.startActivity(intent);
         } else if (id == R.id.nav_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);

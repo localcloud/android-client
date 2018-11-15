@@ -1,4 +1,4 @@
-package example.localcloud.localcloud.activities;
+package example.localcloud.localcloud.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -17,16 +17,16 @@ import example.localcloud.localcloud.R;
 import example.localcloud.localcloud.models.FolderModel;
 
 
-public class AdapterPhotosFolder extends ArrayAdapter<FolderModel> {
+public class FolderAdapter extends ArrayAdapter<FolderModel> {
 
     Context context;
     ViewHolder viewHolder;
-    ArrayList<FolderModel> al_menu = new ArrayList<>();
+    ArrayList<FolderModel> folderModels = new ArrayList<>();
 
 
-    public AdapterPhotosFolder(Context context, ArrayList<FolderModel> al_menu) {
-        super(context, R.layout.adapter_photosfolder, al_menu);
-        this.al_menu = al_menu;
+    public FolderAdapter(Context context, ArrayList<FolderModel> folderModels) {
+        super(context, R.layout.adapter_photosfolder, folderModels);
+        this.folderModels = folderModels;
         this.context = context;
 
 
@@ -34,7 +34,7 @@ public class AdapterPhotosFolder extends ArrayAdapter<FolderModel> {
 
     @Override
     public int getCount() {
-        return al_menu.size();
+        return folderModels.size();
     }
 
     @Override
@@ -44,8 +44,8 @@ public class AdapterPhotosFolder extends ArrayAdapter<FolderModel> {
 
     @Override
     public int getViewTypeCount() {
-        if (al_menu.size() > 0) {
-            return al_menu.size();
+        if (folderModels.size() > 0) {
+            return folderModels.size();
         } else {
             return 1;
         }
@@ -74,13 +74,13 @@ public class AdapterPhotosFolder extends ArrayAdapter<FolderModel> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.tv_foldern.setText(al_menu.get(position).getName());
-        viewHolder.tv_foldersize.setText(String.format("%s", al_menu.get(position).countFiles()));
+        viewHolder.tv_foldern.setText(folderModels.get(position).getName());
+        viewHolder.tv_foldersize.setText(String.format("%s", folderModels.get(position).countFiles()));
 
 
         Glide
                 .with(context)
-                .load(String.format("file://%s", al_menu.get(position).getFiles().get(0).getPath()))
+                .load(String.format("file://%s", folderModels.get(position).getFiles().get(0).getPath()))
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
                 .centerCrop()

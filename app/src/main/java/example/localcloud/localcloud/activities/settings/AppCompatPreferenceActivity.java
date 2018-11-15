@@ -1,4 +1,4 @@
-package example.localcloud.localcloud.activities;
+package example.localcloud.localcloud.activities.settings;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

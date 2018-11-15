@@ -1,7 +1,6 @@
-package example.localcloud.localcloud.activities;
+package example.localcloud.localcloud.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,30 +15,28 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import java.util.ArrayList;
 
 import example.localcloud.localcloud.R;
+import example.localcloud.localcloud.models.FolderModel;
 
 
-public class GridViewAdapter extends ArrayAdapter<ModelImages> {
+public class FilesAdapter extends ArrayAdapter<FolderModel> {
 
-    Context context;
-    ViewHolder viewHolder;
-    ArrayList<ModelImages> al_menu = new ArrayList<>();
-    int int_position;
+    private Context context;
+    private ArrayList<FolderModel> folderModels = new ArrayList<>();
+    private int position;
 
 
-    public GridViewAdapter(Context context, ArrayList<ModelImages> al_menu, int int_position) {
-        super(context, R.layout.adapter_photosfolder, al_menu);
-        this.al_menu = al_menu;
+    public FilesAdapter(Context context, ArrayList<FolderModel> folderModels, int position) {
+        super(context, R.layout.adapter_photosfolder, folderModels);
+        this.folderModels = folderModels;
         this.context = context;
-        this.int_position = int_position;
+        this.position = position;
 
 
     }
 
     @Override
     public int getCount() {
-
-        Log.e("ADAPTER LIST SIZE", al_menu.get(int_position).getAllImagesPath().size() + "");
-        return al_menu.get(int_position).getAllImagesPath().size();
+        return folderModels.get(position).getFiles().size();
     }
 
     @Override
@@ -49,8 +46,8 @@ public class GridViewAdapter extends ArrayAdapter<ModelImages> {
 
     @Override
     public int getViewTypeCount() {
-        if (al_menu.get(int_position).getAllImagesPath().size() > 0) {
-            return al_menu.get(int_position).getAllImagesPath().size();
+        if (folderModels.get(position).getFiles().size() > 0) {
+            return folderModels.get(position).getFiles().size();
         } else {
             return 1;
         }
@@ -65,6 +62,7 @@ public class GridViewAdapter extends ArrayAdapter<ModelImages> {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
 
+        ViewHolder viewHolder;
         if (convertView == null) {
 
             viewHolder = new ViewHolder();
@@ -83,7 +81,7 @@ public class GridViewAdapter extends ArrayAdapter<ModelImages> {
         viewHolder.tv_foldersize.setVisibility(View.GONE);
 
 
-        Glide.with(context).load("file://" + al_menu.get(int_position).getAllImagesPath().get(position))
+        Glide.with(context).load("file://" + folderModels.get(this.position).getFiles().get(position).getPath())
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
                 .into(viewHolder.iv_image);

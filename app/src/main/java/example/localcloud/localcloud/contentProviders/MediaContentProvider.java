@@ -93,6 +93,7 @@ public class MediaContentProvider implements ISyncContentProvider {
         for (String folder : this.filterMap.keySet()) {
             this.folders.add(new FolderModel(folder, this.filterMap.get(folder)));
         }
+        this.scanned = true;
         this.filterMap.clear();
         return this.folders;
     }

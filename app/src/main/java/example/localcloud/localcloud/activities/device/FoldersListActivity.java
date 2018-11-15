@@ -22,21 +22,18 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import example.localcloud.localcloud.R;
-import example.localcloud.localcloud.activities.AdapterPhotosFolder;
-import example.localcloud.localcloud.activities.ModelImages;
+import example.localcloud.localcloud.adapters.FolderAdapter;
 import example.localcloud.localcloud.contentProviders.MediaContentProvider;
 import example.localcloud.localcloud.intentServices.SyncTaskService;
 
-public class FolderListActivity extends AppCompatActivity {
-    public static ArrayList<ModelImages> al_images = new ArrayList<>();
+public class FoldersListActivity extends AppCompatActivity {
     GridView gv_folder;
     private static final int REQUEST_PERMISSIONS = 100;
-    private static final String TAG = "zzzz_preview_log";
+    private static final String TAG = "FoldersListActivity";
     private Map selectedState = new HashMap<String, Boolean>();
     private FileUploadBroadcastReceiver fileUploadBroadcastReceiver;
     private ProgressBar progressView;
@@ -58,8 +55,10 @@ public class FolderListActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_folder_list);
+        setContentView(R.layout.activity_device_folder_list);
         this.progressView = findViewById(R.id.determinateBar);
         progressView.setVisibility(ProgressBar.INVISIBLE);
         this.fileUploadBroadcastReceiver = new FileUploadBroadcastReceiver();
@@ -80,6 +79,20 @@ public class FolderListActivity extends AppCompatActivity {
 
 
         gv_folder = (GridView) findViewById(R.id.gv_folder);
+
+        final FoldersListActivity self = this;
+
+        gv_folder.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Intent intent = new Intent(self, FilesListActivity.class);
+                intent.putExtra(FilesListActivity.EXTRA_KEY_SELECTED_FOLDER_POSITION, position);
+                self.startActivity(intent);
+
+            }
+        });
+
         gv_folder.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -105,17 +118,16 @@ public class FolderListActivity extends AppCompatActivity {
         if ((ContextCompat.checkSelfPermission(getApplicationContext(),
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(getApplicationContext(),
                 Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-            if ((ActivityCompat.shouldShowRequestPermissionRationale(FolderListActivity.this,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) && (ActivityCompat.shouldShowRequestPermissionRationale(FolderListActivity.this,
+            if ((ActivityCompat.shouldShowRequestPermissionRationale(FoldersListActivity.this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) && (ActivityCompat.shouldShowRequestPermissionRationale(FoldersListActivity.this,
                     Manifest.permission.READ_EXTERNAL_STORAGE))) {
 
             } else {
-                ActivityCompat.requestPermissions(FolderListActivity.this,
+                ActivityCompat.requestPermissions(FoldersListActivity.this,
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
                         REQUEST_PERMISSIONS);
             }
         } else {
-            Log.e("Else", "Else");
             syncImages();
         }
 
@@ -130,7 +142,7 @@ public class FolderListActivity extends AppCompatActivity {
     }
 
     public void syncImages() {
-        gv_folder.setAdapter(new AdapterPhotosFolder(getApplicationContext(), mediaContentProvider.fetch()));
+        gv_folder.setAdapter(new FolderAdapter(getApplicationContext(), mediaContentProvider.fetch()));
     }
 
     @Override
@@ -143,11 +155,10 @@ public class FolderListActivity extends AppCompatActivity {
                     if (grantResults.length > 0 && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                         syncImages();
                     } else {
-                        Toast.makeText(FolderListActivity.this, "The app was not allowed to read or write to your storage. Hence, it cannot function properly. Please consider granting it this permission", Toast.LENGTH_LONG).show();
+                        Toast.makeText(FoldersListActivity.this, "The app was not allowed to read or write to your storage. Hence, it cannot function properly. Please consider granting it this permission", Toast.LENGTH_LONG).show();
                     }
                 }
             }
         }
     }
-
 }

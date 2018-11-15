@@ -98,4 +98,5 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="title_activity_folder_list">On Device</string>
+    <string name="title_activity_file_list">Folder Name</string>
 </resources>
