@@ -25,17 +25,18 @@ import android.widget.Toast;
 import java.util.HashMap;
 import java.util.Map;
 
+import example.localcloud.localcloud.LCApp;
 import example.localcloud.localcloud.R;
 import example.localcloud.localcloud.adapters.FolderAdapter;
 import example.localcloud.localcloud.contentProviders.MediaContentProvider;
 import example.localcloud.localcloud.intentServices.SyncTaskService;
+import example.localcloud.localcloud.models.FolderModel;
+import example.localcloud.localcloud.persistance.FileModel;
 
 public class FoldersListActivity extends AppCompatActivity {
     GridView gv_folder;
     private static final int REQUEST_PERMISSIONS = 100;
     private MediaContentProvider mediaContentProvider = MediaContentProvider.instance(this);
-
-
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -45,7 +46,6 @@ public class FoldersListActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_folder_list);
-
 
 
         gv_folder = (GridView) findViewById(R.id.gv_folder);
@@ -84,6 +84,12 @@ public class FoldersListActivity extends AppCompatActivity {
 
 
     public void syncImages() {
+        for (FolderModel fm : mediaContentProvider.fetch()) {
+            FileModel fileModel = new FileModel();
+            fileModel.setId(fm.getPk());
+            fileModel.setSyncStatus(1);
+            LCApp.app().repositories().files().save(fileModel);
+        }
         gv_folder.setAdapter(new FolderAdapter(getApplicationContext(), mediaContentProvider.fetch()));
     }
 

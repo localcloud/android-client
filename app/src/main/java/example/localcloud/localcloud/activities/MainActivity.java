@@ -1,16 +1,22 @@
 package example.localcloud.localcloud.activities;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -18,11 +24,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import java.util.List;
+
+import example.localcloud.localcloud.LCApp;
 import example.localcloud.localcloud.R;
 import example.localcloud.localcloud.activities.device.FoldersListActivity;
+import example.localcloud.localcloud.activities.models.FileViewModel;
 import example.localcloud.localcloud.activities.settings.SettingsActivity;
+import example.localcloud.localcloud.adapters.MainAdapter;
 import example.localcloud.localcloud.contentProviders.MediaContentProvider;
 import example.localcloud.localcloud.intentServices.SyncTaskService;
+import example.localcloud.localcloud.persistance.FileModel;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -31,10 +43,12 @@ public class MainActivity extends AppCompatActivity
     private ProgressBar progressView;
     private MediaContentProvider mediaContentProvider = MediaContentProvider.instance(this);
     private static final String TAG = "FoldersListActivity";
-
+    private FileViewModel fileViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -66,6 +80,24 @@ public class MainActivity extends AppCompatActivity
                 progressView.setVisibility(ProgressBar.VISIBLE);
                 startService(syncTaskService.putExtra(SyncTaskService.EXTRA_KEY_FILE_LIST, mediaContentProvider.fetchOnlyPathForSync()));
             }
+        });
+
+        fileViewModel = ViewModelProviders.of(this).get(FileViewModel.class);
+
+
+        RecyclerView recyclerView = findViewById(R.id.recyclerview);
+        final MainAdapter adapter = new MainAdapter(this);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        fileViewModel.getAllFiles().observe(this, new Observer<List<FileModel>>() {
+            @Override
+            public void onChanged(@Nullable final List<FileModel> fileModels) {
+
+                // Update the cached copy of the words in the adapter.
+                adapter.setFileModels(fileModels);
+            }
+
         });
     }
 
