@@ -6,15 +6,13 @@
     android:layout_height="match_parent"
     tools:context=".activities.device.FoldersListActivity">
 
-
-
     <GridView
         android:id="@+id/gv_folder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginRight="0dp"
         android:numColumns="2" />
 
 </android.support.design.widget.CoordinatorLayout>
